@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ngân Hàng Câu Hỏi Pháp Luật</title>
+  <meta name="description" content="Tra cứu ngân hàng câu hỏi và đáp án môn Pháp Luật Đại Cương - Tìm kiếm và lọc theo chủ đề nhanh chóng." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Background particles -->
+  <div class="bg-particles" id="bgParticles"></div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <div class="logo-icon">⚖️</div>
+        <div class="logo-text">
+          <span class="logo-title">LawBank</span>
+          <span class="logo-sub">Ngân Hàng Pháp Luật</span>
+        </div>
+      </div>
+      <div class="header-stats">
+        <div class="stat-chip" id="totalCount">
+          <span class="stat-num">0</span>
+          <span class="stat-label">Câu hỏi</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main content -->
+  <main class="main">
+    <!-- Search section -->
+    <section class="search-section">
+      <div class="search-hero">
+        <h1 class="search-title">Tìm Câu Hỏi & Đáp Án</h1>
+        <p class="search-subtitle">Pháp Luật Đại Cương — 9 chủ đề, không trùng lặp</p>
+      </div>
+
+      <div class="search-box-wrapper">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input
+            type="text"
+            id="searchInput"
+            class="search-input"
+            placeholder="Nhập từ khóa tìm kiếm..."
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <button class="clear-btn" id="clearBtn" title="Xóa tìm kiếm">✕</button>
+        </div>
+      </div>
+
+      <!-- Filter chips -->
+      <div class="filter-section">
+        <div class="filter-scroll">
+          <button class="chip active" data-filter="all">🗂 Tất cả</button>
+          <button class="chip" data-filter="bai1">📚 Bài 1: Pháp luật ĐC</button>
+          <button class="chip" data-filter="bai2">📜 Bài 2: Hiến pháp</button>
+          <button class="chip" data-filter="bai3">⚖️ Bài 3: Dân sự</button>
+          <button class="chip" data-filter="bai4">🏛️ Bài 4: Hành chính</button>
+          <button class="chip" data-filter="bai6">🔒 Bài 6: Hình sự</button>
+          <button class="chip" data-filter="bai7">🛒 Bài 7: NTD</button>
+          <button class="chip" data-filter="bai8">🚫 Bài 8: Tham nhũng</button>
+          <button class="chip" data-filter="bai9">👷 Bài 9: Lao động</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Results -->
+    <section class="results-section">
+      <div class="results-header" id="resultsHeader">
+        <span id="resultCount" class="result-count"></span>
+        <div class="sort-controls">
+          <button class="sort-btn active" id="sortDefault" title="Sắp xếp mặc định">Mặc định</button>
+          <button class="sort-btn" id="sortRandom" title="Ngẫu nhiên">🔀 Ngẫu nhiên</button>
+        </div>
+      </div>
+
+      <div class="cards-grid" id="cardsGrid">
+        <!-- Cards rendered by JS -->
+      </div>
+
+      <div class="empty-state" id="emptyState" style="display:none;">
+        <div class="empty-icon">🔍</div>
+        <h3>Không tìm thấy kết quả</h3>
+        <p>Thử từ khóa khác hoặc chọn chủ đề khác</p>
+      </div>
+
+      <div class="loading-state" id="loadingState">
+        <div class="spinner"></div>
+        <p>Đang tải dữ liệu...</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Scroll to top -->
+  <button class="scroll-top" id="scrollTop" title="Lên đầu trang">↑</button>
+
+  <!-- Answer modal -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal" id="modal">
+      <button class="modal-close" id="modalClose">✕</button>
+      <div class="modal-badge" id="modalBadge"></div>
+      <h2 class="modal-question" id="modalQuestion"></h2>
+      <div class="modal-divider"></div>
+      <div class="modal-answer-label">✅ Đáp án:</div>
+      <p class="modal-answer" id="modalAnswer"></p>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
