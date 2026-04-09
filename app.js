@@ -10,6 +10,36 @@ function normalize(str) {
     .toLowerCase();
 }
 
+// ---- Multi-word tokenized search ----
+// "Lao dong 2019" => tokens ["lao","dong","2019"]
+// Each token must appear somewhere in the text
+function matchesTokens(tokens, text) {
+  const norm = normalize(text);
+  return tokens.every(token => norm.includes(token));
+}
+
+// ---- Quick keyword suggestions ----
+const QUICK_KEYWORDS = [
+  { label: "Lao động 2019", value: "Lao động 2019" },
+  { label: "Hiến pháp 2013", value: "Hiến pháp 2013" },
+  { label: "Dân sự 2015", value: "Dân sự 2015" },
+  { label: "Hình sự 2015", value: "Hình sự 2015" },
+  { label: "Hành chính 2012", value: "Hành chính 2012" },
+  { label: "Tham nhũng 2018", value: "Tham nhũng 2018" },
+  { label: "Người tiêu dùng 2023", value: "Người tiêu dùng 2023" },
+  { label: "Quốc hội", value: "Quốc hội" },
+  { label: "Hợp đồng vô hiệu", value: "Hợp đồng vô hiệu" },
+  { label: "Tội phạm nghiêm trọng", value: "Tội phạm nghiêm trọng" },
+  { label: "Sa thải", value: "Sa thải" },
+  { label: "Tòa án", value: "Tòa án" },
+  { label: "Đúng hay Sai", value: "Đúng hay Sai" },
+  { label: "Hình phạt tử hình", value: "tử hình" },
+  { label: "Bồi thường", value: "bồi thường" },
+  { label: "Vi phạm", value: "vi phạm" },
+  { label: "Chủ tịch nước", value: "Chủ tịch nước" },
+  { label: "Pháp nhân", value: "pháp nhân" },
+];
+
 // ---- State ----
 let currentFilter = "all";
 let currentQuery = "";
@@ -39,6 +69,9 @@ function init() {
   // Set total count
   totalCountEl.textContent = QUIZ_DATA.length;
 
+  // Render keyword chips
+  renderKeywords();
+
   // Render all on start
   filteredData = [...QUIZ_DATA];
   renderCards(filteredData);
@@ -60,6 +93,24 @@ function init() {
 
   // Particles
   createParticles();
+}
+
+// ---- Render quick keyword chips ----
+function renderKeywords() {
+  const container = document.getElementById("keywordChips");
+  if (!container) return;
+  container.innerHTML = QUICK_KEYWORDS.map(kw =>
+    `<button class="kw-chip" onclick="applyKeyword('${kw.value.replace(/'/g, "\\'")}')">🔖 ${kw.label}</button>`
+  ).join("");
+}
+
+// ---- Apply keyword from chip click ----
+function applyKeyword(value) {
+  searchInput.value = value;
+  currentQuery = value;
+  clearBtn.classList.add("visible");
+  applyFilters();
+  searchInput.scrollIntoView({ behavior: "smooth", block: "center" });
 }
 
 // ---- Search ----
@@ -111,13 +162,18 @@ function shuffle(arr) {
   }
 }
 
-// ---- Core filter logic ----
+// ---- Core filter logic (multi-word tokenized) ----
 function applyFilters() {
-  const q = normalize(currentQuery);
+  // Split query into tokens, filter empty strings
+  const tokens = normalize(currentQuery)
+    .split(/\s+/)
+    .filter(t => t.length > 0);
 
   filteredData = QUIZ_DATA.filter(item => {
     const matchSubject = currentFilter === "all" || item.subject === currentFilter;
-    const matchQuery = !q || normalize(item.q).includes(q) || normalize(item.a).includes(q);
+    const matchQuery = tokens.length === 0 ||
+      matchesTokens(tokens, item.q) ||
+      matchesTokens(tokens, item.a);
     return matchSubject && matchQuery;
   });
 
@@ -126,12 +182,19 @@ function applyFilters() {
   renderCards(filteredData);
 }
 
-// ---- Highlight match ----
+// ---- Highlight match (each token separately) ----
 function highlight(text, query) {
   if (!query) return escapeHtml(text);
-  const escaped = escapeHtml(text);
-  const escapedQ = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  return escaped.replace(new RegExp(`(${escapedQ})`, "gi"), "<mark>$1</mark>");
+  let escaped = escapeHtml(text);
+  const tokens = query.trim().split(/\s+/).filter(t => t.length > 0);
+  tokens.forEach(token => {
+    // Build regex ignoring diacritics by matching the original token chars literally
+    const escapedToken = token.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    try {
+      escaped = escaped.replace(new RegExp(`(${escapedToken})`, "gi"), "<mark>$1</mark>");
+    } catch(e) {}
+  });
+  return escaped;
 }
 
 function escapeHtml(text) {
